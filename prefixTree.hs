@@ -1,12 +1,12 @@
 import qualified Data.Map.Strict as Map
 
-data Tree = Node (Map.Map Char Tree)
+data Tree = Node Bool (Map.Map Char Tree)
 
 
 addStr :: String -> Tree -> Tree
-addStr "" tree = tree
-addStr (c : rest) (Node treeNode)
-    = Node
+addStr "" (Node _ treeNode) = Node True treeNode
+addStr (c : rest) (Node end treeNode)
+    = Node end
     . Map.insert c childToInsert
     $ treeNode
         where
@@ -17,20 +17,23 @@ addStr (c : rest) (Node treeNode)
             child = Map.findWithDefault empty c $ treeNode
 
 extractMap :: Tree -> Map.Map Char Tree
-extractMap (Node map) = map
+extractMap (Node _ map) = map
 
-empty = Node Map.empty
+empty = Node False Map.empty
 
 member :: String -> Tree -> Bool
-member "" _ = True
-member (c : rest) (Node treeNode)
+member "" (Node end treeNode) = end
+member (c : rest) (Node _ treeNode)
   = c `Map.member` treeNode && member rest (treeNode Map.! c)
 
 showTree :: Tree -> String
-showTree (Node treeNode)
+showTree (Node _ treeNode)
     = tail
     . init
     . show
     . map (showTree . snd)
     . Map.toList
     $ treeNode
+
+fromList :: [String] -> Tree
+fromList = foldl (flip addStr) empty

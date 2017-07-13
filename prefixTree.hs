@@ -1,6 +1,6 @@
 import qualified Data.Map.Strict as Map
 
-data Tree a = Node Bool (Map.Map a (Tree a))
+data Tree a = Node Bool (Map.Map a (Tree a)) deriving Show
 
 
 addStr :: Ord a => [a] -> Tree a -> Tree a
@@ -23,17 +23,6 @@ member :: Ord a => [a] -> Tree a -> Bool
 member [] (Node end treeNode) = end
 member (c : rest) (Node _ treeNode)
   = c `Map.member` treeNode && member rest (treeNode Map.! c)
-
-
-
--- showTree :: (Ord a, Show a) => Tree a -> [a]
--- showTree (Node _ treeNode)
---     = tail
---     . init
---     . show
---     . map (showTree . snd)
---     . Map.toList
---     $ treeNode
 
 fromList :: (Ord a, Foldable t) => t [a] -> Tree a
 fromList = foldl (flip addStr) empty

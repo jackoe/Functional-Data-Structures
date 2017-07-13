@@ -1,5 +1,3 @@
-
-
 data Tree a =  Node (Tree a) (Tree a) a | Empty
     deriving (Show, Eq)
 

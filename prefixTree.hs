@@ -3,7 +3,6 @@ import qualified Data.Map.Strict as Map
 
 data Tree a = Node Bool (Map.Map a (Tree a)) deriving Show
 
-
 insert :: forall a. Ord a => [a] -> Tree a -> Tree a
 insert [] (Node _ treeNode) = Node True treeNode
 insert (c : rest) (Node end treeNode)

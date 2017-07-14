@@ -1,4 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+import Data.Maybe
+
 data Tree a =  Node (Tree a) (Tree a) a | Empty
     deriving (Show, Eq)
 
@@ -25,22 +27,20 @@ insert elem tree = if insert'' == Empty then tree else insert''
     where
 
         insert'' :: Tree a
-        insert'' = insert' tree
+        insert'' = fromMaybe Empty . insert' $ tree
 
-        insert' :: Tree a -> Tree a
+        insert' :: Tree a -> Maybe (Tree a)
         insert' Empty = Node Empty Empty elem
         insert' (Node left right curr)
-          | elem < curr = nodeLeft (insert' left) right  curr
-          | elem > curr = nodeRight left (insert' right) curr
-          | otherwise = Empty
-
-        nodeRight :: Tree a -> Tree a -> a -> Tree a
-        nodeRight left Empty curr = Empty
-        nodeRight left right curr = Node left right curr
-
-        nodeLeft  :: Tree a -> Tree a -> a -> Tree a
-        nodeLeft Empty riht curr = Empty
-        nodeLeft left  right curr = Node left right curr
+          | elem < curr = Just
+                        . fmap (\left'  -> Node left' right  curr)
+                        . insert'
+                        $ left
+          | elem > curr = Just
+                        . fmap (\right' -> Node left  right' curr)
+                        . insert'
+                        $ right
+          | otherwise = Nothing
 
 fromList :: (Foldable t, Ord a) => t a -> Tree a
 fromList = foldl (flip insert) empty

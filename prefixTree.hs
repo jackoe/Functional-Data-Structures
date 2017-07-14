@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 import qualified Data.Map.Strict as Map
 
-data Tree a = Node Bool (Map.Map a (Tree a)) deriving Show
+data Tree a = Node Bool (Map.Map a (Tree a)) deriving (Show, Eq)
 
 insert :: forall a. Ord a => [a] -> Tree a -> Tree a
 insert [] (Node _ treeNode) = Node True treeNode
@@ -19,7 +19,14 @@ insert (c : rest) (Node end treeNode)
 extractMap :: Ord a => Tree a -> Map.Map a (Tree a)
 extractMap (Node _ map) = map
 
+null :: Ord a => Tree a -> Bool
+null = (==) empty
+
+empty :: Tree a
 empty = Node False Map.empty
+
+singleton :: Ord a => [a] -> Tree a
+singleton = flip insert empty
 
 member :: Ord a => [a] -> Tree a -> Bool
 member [] (Node end treeNode) = end

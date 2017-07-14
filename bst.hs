@@ -4,10 +4,13 @@ import Data.Maybe
 data Tree a =  Node (Tree a) (Tree a) a | Empty
     deriving (Show, Eq)
 
+null :: Ord a => Tree a -> Bool
+null = (==) empty
+
 empty :: Tree a
 empty = Empty
 
-singleton :: a -> Tree a
+singleton :: Ord a => a -> Tree a
 singleton = Node Empty Empty
 
 member :: forall a. Ord a =>  a -> Tree a -> Bool
@@ -30,14 +33,12 @@ insert elem tree = if insert'' == Empty then tree else insert''
         insert'' = fromMaybe Empty . insert' $ tree
 
         insert' :: Tree a -> Maybe (Tree a)
-        insert' Empty = Node Empty Empty elem
+        insert' Empty = Just $ Node Empty Empty elem
         insert' (Node left right curr)
-          | elem < curr = Just
-                        . fmap (\left'  -> Node left' right  curr)
+          | elem < curr = fmap (\left'  -> Node left' right curr)
                         . insert'
                         $ left
-          | elem > curr = Just
-                        . fmap (\right' -> Node left  right' curr)
+          | elem > curr = fmap (\right' -> Node left right' curr)
                         . insert'
                         $ right
           | otherwise = Nothing

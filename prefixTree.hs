@@ -4,15 +4,15 @@ import qualified Data.Map.Strict as Map
 data Tree a = Node Bool (Map.Map a (Tree a)) deriving Show
 
 
-addStr :: Ord a => [a] -> Tree a -> Tree a
-addStr [] (Node _ treeNode) = Node True treeNode
-addStr (c : rest) (Node end treeNode)
+insert :: forall a. Ord a => [a] -> Tree a -> Tree a
+insert [] (Node _ treeNode) = Node True treeNode
+insert (c : rest) (Node end treeNode)
     = Node end
     . Map.insert c childToInsert
     $ treeNode
         where
             childToInsert :: Tree a
-            childToInsert = addStr rest child
+            childToInsert = insert rest child
 
             child :: Tree a
             child = Map.findWithDefault empty c $ treeNode
@@ -28,4 +28,4 @@ member (c : rest) (Node _ treeNode)
     = c `Map.member` treeNode && member rest (treeNode Map.! c)
 
 fromList :: (Ord a, Foldable t) => t [a] -> Tree a
-fromList = foldl (flip addStr) empty
+fromList = foldl (flip insert) empty

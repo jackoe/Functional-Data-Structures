@@ -26,11 +26,8 @@ member elem = member'
 
 
 insert :: forall a. Ord a => a -> Tree a -> Tree a
-insert elem tree = if insert'' == Empty then tree else insert''
+insert elem tree = fromMaybe tree . insert' $ tree
     where
-
-        insert'' :: Tree a
-        insert'' = fromMaybe Empty . insert' $ tree
 
         insert' :: Tree a -> Maybe (Tree a)
         insert' Empty = Just $ Node Empty Empty elem
